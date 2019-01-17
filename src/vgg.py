@@ -1,11 +1,11 @@
 # Copyright (c) 2015-2016 Anish Athalye. Released under GPLv3.
 
-import tensorflow as tf
 import numpy as np
 import scipy.io
-import pdb
+import tensorflow as tf
 
-MEAN_PIXEL = np.array([ 123.68 ,  116.779,  103.939])
+MEAN_PIXEL = np.array([123.68, 116.779, 103.939])
+
 
 def net(data_path, input_image):
     layers = (
@@ -28,7 +28,7 @@ def net(data_path, input_image):
     mean_pixel = np.mean(mean, axis=(0, 1))
     weights = data['layers'][0]
 
-    net = {}
+    _net = {}
     current = input_image
     for i, name in enumerate(layers):
         kind = name[:4]
@@ -43,26 +43,26 @@ def net(data_path, input_image):
             current = tf.nn.relu(current)
         elif kind == 'pool':
             current = _pool_layer(current)
-        net[name] = current
+        _net[name] = current
 
-    assert len(net) == len(layers)
-    return net
+    assert len(_net) == len(layers)
+    return _net
 
 
-def _conv_layer(input, weights, bias):
-    conv = tf.nn.conv2d(input, tf.constant(weights), strides=(1, 1, 1, 1),
-            padding='SAME')
+def _conv_layer(_input, weights, bias):
+    conv = tf.nn.conv2d(_input, tf.constant(weights), strides=(1, 1, 1, 1),
+                        padding='SAME')
     return tf.nn.bias_add(conv, bias)
 
 
-def _pool_layer(input):
-    return tf.nn.max_pool(input, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1),
-            padding='SAME')
+def _pool_layer(_input):
+    return tf.nn.max_pool(_input, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1),
+                          padding='SAME')
 
 
-def preprocess(image):
+def pre_process(image):
     return image - MEAN_PIXEL
 
 
-def unprocess(image):
+def un_process(image):
     return image + MEAN_PIXEL
